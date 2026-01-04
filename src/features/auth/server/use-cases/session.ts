@@ -85,7 +85,7 @@ export const validateSessionAndGetUser = async (session: string) => {
 
     if (Date.now() >= user.session.expiresAt.getTime() - SESSION_REFRESH_TIME * 1000) {
         await db.update(sessions).set({
-            expiresAt: new Date(Date.now() + SESSION_REFRESH_TIME * 1000)
+            expiresAt: new Date(Date.now() + SESSION_LIFETIME * 1000)
         }).where(eq(sessions.id, user.session.id))
     }
     return user
