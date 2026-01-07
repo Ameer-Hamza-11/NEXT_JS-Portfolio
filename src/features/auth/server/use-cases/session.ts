@@ -45,7 +45,7 @@ export const createSessionAndSetCookies = async (userId: number, tx: DbClient = 
     await createSessionData({ userId, token, userAgent: headersList.get("user-agent") || "", ip, tx })
     const cookieStore = await cookies()
     cookieStore.set("session", token, {
-        secure: true,
+        secure: process.env.NODE_ENV === "production",
         httpOnly: true,
         sameSite: "lax",
         path: "/",
@@ -93,5 +93,6 @@ export const validateSessionAndGetUser = async (session: string) => {
 }
 
 export const invalidateSession = async (id: string) => {
+
     await db.delete(sessions).where(eq(sessions.id, id))
 }
