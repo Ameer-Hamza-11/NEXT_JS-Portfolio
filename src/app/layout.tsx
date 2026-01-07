@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
+import Navbar from "@/features/users/components/Navbar";
+import { getCurrentUser } from "@/features/auth/server/auth.queries";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -22,22 +24,32 @@ export const metadata: Metadata = {
     description: "Welcome to My Portfolio",
     url: "https://mern-portfolio-by-hamza.netlify.app",
     siteName: "My Site",
-    images: [{ url: "https://60lubhnpkm.ufs.sh/f/vGItfculpA5wGVJ5Gwr0EkJseWmHVZhFTdC4DbYNxMz85PUB" }],
+    images: [
+      {
+        url: "https://60lubhnpkm.ufs.sh/f/vGItfculpA5wGVJ5Gwr0EkJseWmHVZhFTdC4DbYNxMz85PUB",
+      },
+    ],
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+    const user = await getCurrentUser();
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <Toaster richColors position="top-right" />
-        {children}
+        <main className="w-full min-h-screen flex flex-col bg-neutral-50 text-neutral-600">
+          <Navbar user={user} />
+
+          <div className="pt-[8ch]">{children}</div>
+        </main>
+       
       </body>
     </html>
   );

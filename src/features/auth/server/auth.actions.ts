@@ -1,12 +1,13 @@
 "use server"
 
 import { db } from "@/lib/db"
-import { LoginUserDataType, loginUserSchema, registerUserSchema, registerUserSchemaType, RegisterUserWithConfirmDataType, registerUserWithConfirmSchema } from "../auth.schema"
+import { LoginUserDataType, loginUserSchema, RegisterUserWithConfirmDataType, registerUserWithConfirmSchema } from "../auth.schema"
 import { users } from "@/drizzle/schema"
 import { eq, or } from "drizzle-orm"
 import argon from "argon2"
 import { createSessionAndSetCookies, invalidateSession, validateSessionAndGetUser } from "./use-cases/session"
 import { cookies } from "next/headers"
+import { redirect } from "next/navigation"
 
 
 export const registerUserAction = async (data: RegisterUserWithConfirmDataType) => {
@@ -72,7 +73,7 @@ export const logoutUserAction = async () => {
     try {
         const cookieStore = await cookies()
         const token = cookieStore.get("session")?.value;
-        
+
         if (!token) return;
 
         const user = await validateSessionAndGetUser(token)
@@ -80,6 +81,7 @@ export const logoutUserAction = async () => {
             await invalidateSession(user.session.id)
         }
         cookieStore.delete("session")
+
 
 
     } catch (error) {

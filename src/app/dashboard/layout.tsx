@@ -1,7 +1,6 @@
 import { getCurrentUser } from "@/features/auth/server/auth.queries";
 import Navbar from "@/features/users/components/Navbar";
 import type { Metadata } from "next";
-import { notFound, redirect } from "next/navigation";
 
 // const geistSans = Montserrat({
 //   variable: "--font-geist-sans",
@@ -35,15 +34,13 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const user = await getCurrentUser();
+
   return (
-    <html lang="en">
-      <body>
-        <main className="w-full min-h-screen flex flex-col bg-neutral-50 text-neutral-600">
-          <Navbar />
-       
-          {children}
-        </main>
-      </body>
-    </html>
+    <main className="w-full min-h-screen flex flex-col bg-neutral-50 text-neutral-600">
+      <Navbar user={user} />
+
+      <div className="pt-[8ch]">{children}</div>
+    </main>
   );
 }
