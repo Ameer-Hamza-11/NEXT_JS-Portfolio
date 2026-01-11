@@ -32,7 +32,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
     const user = await getCurrentUser()
-    if (!user || user.role !== "admin") {
+    if (!user) {
         notFound()
     }
   return (

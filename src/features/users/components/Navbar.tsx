@@ -25,26 +25,29 @@ interface UserProps {
       userAgent: string;
       ip: string;
     };
-  } | null; // Allow null in case the user isn't logged in
+  } | null;
 }
 
-const Navbar = ({ user }: UserProps) => {
+const Navbar = ({ user }: { user: UserProps["user"] }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
   const router = useRouter();
 
-  const navItems = [
+  const navItems = [{ id: 1, name: "Home", path: "/" }];
+  const loggedInNavItems = [
     { id: 1, name: "Home", path: "/" },
-    { id: 2, name: "About", path: "/about" },
-    { id: 3, name: "Project", path: "/projects" },
-    { id: 4, name: "Services", path: "/services" },
-    { id: 5, name: "Contact", path: "/contact" },
+    { id: 2, name: "Dashboard", path: "/dashboard" },
+    { id: 3, name: "Profile", path: "/profile" },
   ];
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    const handleScroll = () => setIsScrolled(window.scrollY > 50);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -54,28 +57,21 @@ const Navbar = ({ user }: UserProps) => {
     router.replace("/login");
   };
 
+  if (!mounted) return null;
+
   return (
     <>
-      {/* NAVBAR */}
       <motion.header
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.4 }}
         className={`fixed top-0 w-full h-[8ch] z-50 flex items-center justify-between
-        md:px-16 sm:px-10 px-4 backdrop-blur-md border-b
-        transition-colors duration-300
-        ${
-          isScrolled
-            ? "bg-white/70 border-neutral-200 shadow-sm"
-            : "bg-transparent border-transparent"
-        }
-        `}
+          md:px-16 sm:px-10 px-4 backdrop-blur-md border-b
+          transition-colors duration-300
+          ${isScrolled ? "bg-white/70 border-neutral-200 shadow-sm" : "bg-transparent border-transparent"}`}
       >
         {/* Logo */}
-        <Link
-          href="/"
-          className="flex items-center gap-2 text-lg font-semibold text-neutral-700"
-        >
+        <Link href="/" className="flex items-center gap-2 text-lg font-semibold text-neutral-700">
           <Crown size={24} className="text-neutral-800" />
           DevHub
         </Link>
@@ -83,12 +79,9 @@ const Navbar = ({ user }: UserProps) => {
         {/* Desktop Nav */}
         <div className="hidden md:flex items-center gap-10">
           <ul className="flex items-center gap-8 text-neutral-700">
-            {navItems.map((item) => (
+            {(user ? loggedInNavItems : navItems).map((item) => (
               <li key={item.id}>
-                <Link
-                  href={item.path}
-                  className="relative hover:text-black transition-colors"
-                >
+                <Link href={item.path} className="hover:text-sky-600 transition">
                   {item.name}
                 </Link>
               </li>
@@ -98,16 +91,10 @@ const Navbar = ({ user }: UserProps) => {
           <div className="flex items-center gap-4">
             {!user ? (
               <>
-                <Link
-                  href="/login"
-                  className="px-6 py-2 rounded-full text-neutral-700 hover:bg-neutral-100 transition"
-                >
+                <Link href="/login" className="px-6 py-2 rounded-full text-neutral-700 hover:bg-neutral-100 transition">
                   Sign In
                 </Link>
-                <Link
-                  href="/register"
-                  className="px-6 py-2 rounded-lg bg-neutral-900 text-white hover:bg-neutral-800 transition"
-                >
+                <Link href="/register" className="px-6 py-2 rounded-lg bg-neutral-900 text-white hover:bg-neutral-800 transition">
                   Get Started
                 </Link>
               </>
@@ -118,15 +105,12 @@ const Navbar = ({ user }: UserProps) => {
         </div>
 
         {/* Mobile Menu Button */}
-        <button
-          onClick={() => setIsOpen(true)}
-          className="md:hidden text-neutral-700"
-        >
+        <button onClick={() => setIsOpen(true)} className="md:hidden text-neutral-700">
           <Menu size={26} />
         </button>
       </motion.header>
 
-      {/* MOBILE MENU */}
+      {/* Mobile Menu */}
       <AnimatePresence>
         {isOpen && (
           <motion.aside
@@ -136,16 +120,12 @@ const Navbar = ({ user }: UserProps) => {
             transition={{ duration: 0.35, ease: "easeInOut" }}
             className="fixed inset-0 z-60 bg-white flex flex-col"
           >
-            {/* Header */}
+            {/* Mobile Header */}
             <div className="flex items-center justify-between px-4 h-[8ch] border-b">
-              <Link
-                href="/"
-                className="flex items-center gap-2 text-lg font-semibold"
-              >
+              <Link href="/" className="flex items-center gap-2 text-lg font-semibold">
                 <Crown size={24} />
                 DevHub
               </Link>
-
               <button onClick={() => setIsOpen(false)}>
                 <X size={28} />
               </button>
@@ -155,29 +135,15 @@ const Navbar = ({ user }: UserProps) => {
             <motion.ul
               initial="hidden"
               animate="visible"
-              variants={{
-                hidden: {},
-                visible: {
-                  transition: {
-                    staggerChildren: 0.08,
-                  },
-                },
-              }}
+              variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.08 } } }}
               className="flex flex-col items-center gap-6 mt-10 text-lg"
             >
-              {navItems.map((item) => (
+              {(user ? loggedInNavItems : navItems).map((item) => (
                 <motion.li
                   key={item.id}
-                  variants={{
-                    hidden: { opacity: 0, y: 10 },
-                    visible: { opacity: 1, y: 0 },
-                  }}
+                  variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }}
                 >
-                  <Link
-                    href={item.path}
-                    onClick={() => setIsOpen(false)}
-                    className="hover:text-sky-600 transition"
-                  >
+                  <Link href={item.path} onClick={() => setIsOpen(false)} className="hover:text-sky-600 transition">
                     {item.name}
                   </Link>
                 </motion.li>
@@ -188,21 +154,10 @@ const Navbar = ({ user }: UserProps) => {
             <div className="mt-auto p-6 flex flex-col gap-4">
               {!user ? (
                 <>
-                  <Link
-                    href="/login"
-                    onClick={() => setIsOpen(false)}
-                    className="w-full text-center py-3 rounded-full border border-neutral-300
-        text-neutral-700 hover:bg-neutral-100 transition"
-                  >
+                  <Link href="/login" onClick={() => setIsOpen(false)} className="w-full text-center py-3 rounded-full border border-neutral-300 text-neutral-700 hover:bg-neutral-100 transition">
                     Sign In
                   </Link>
-
-                  <Link
-                    href="/register"
-                    onClick={() => setIsOpen(false)}
-                    className="w-full text-center py-3 rounded-lg
-        bg-neutral-900 text-white hover:bg-neutral-800 transition"
-                  >
+                  <Link href="/register" onClick={() => setIsOpen(false)} className="w-full text-center py-3 rounded-lg bg-neutral-900 text-white hover:bg-neutral-800 transition">
                     Get Started
                   </Link>
                 </>
@@ -212,8 +167,7 @@ const Navbar = ({ user }: UserProps) => {
                     setIsOpen(false);
                     handleLogout();
                   }}
-                  className="w-full py-3 rounded-lg bg-neutral-900
-      text-white hover:bg-neutral-800 transition"
+                  className="w-full py-3 rounded-lg bg-neutral-900 text-white hover:bg-neutral-800 transition"
                 >
                   Logout
                 </Button>

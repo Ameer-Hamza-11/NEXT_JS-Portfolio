@@ -9,63 +9,65 @@ import {
   Server,
   GitBranch,
   Rocket,
-  Repeat,
   Globe,
+  Repeat,
   Sparkles,
 } from "lucide-react";
 
 const About = () => {
   return (
-    <section className="py-24">
+    <section className="relative py-28">
+      {/* subtle background depth */}
+      <div className="absolute inset-0 -z-10 bg-gradient-to-b from-background via-muted/20 to-background" />
+
       <div className="max-w-6xl mx-auto px-4">
-        {/* ================= Heading ================= */}
+        {/* ================= Header ================= */}
         <motion.div
-          initial={{ opacity: 0, y: 25 }}
+          initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
+          transition={{ duration: 0.6 }}
           viewport={{ once: true }}
-          className="mb-14 max-w-3xl"
+          className="mb-20 max-w-3xl"
         >
-          <h2 className="text-3xl md:text-4xl font-bold mb-3">
+          <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
             About Me
           </h2>
-          <p className="text-muted-foreground text-base md:text-lg">
-            A quick introduction and the skills I use to build
-            high-quality web applications.
+          <p className="text-muted-foreground text-base md:text-lg leading-relaxed">
+            I design and build modern full-stack web applications with a strong
+            focus on performance, clean architecture, and user experience.
           </p>
         </motion.div>
 
         {/* ================= Main Grid ================= */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-14">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
           {/* ================= Bio ================= */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
-            className="space-y-5 text-muted-foreground leading-relaxed text-sm md:text-base"
+            className="space-y-6 text-sm md:text-base leading-relaxed text-muted-foreground"
           >
             <p>
-              Hi! I’m{" "}
+              Hi, I’m{" "}
               <span className="font-semibold text-foreground">
                 Ameer Hamza
               </span>
-              , a passionate{" "}
-              <strong>Full Stack JavaScript Developer</strong>{" "}
-              focused on building modern, fast, and scalable web
-              applications.
+              , a <strong>Full Stack JavaScript Developer</strong> who enjoys
+              transforming ideas into reliable, scalable, and visually clean
+              web products.
             </p>
 
             <p>
-              I specialize in technologies like{" "}
+              My core stack includes{" "}
               <strong>
                 React, Next.js, Node.js, Express, MongoDB, and MySQL
-              </strong>{" "}
-              to deliver complete end-to-end solutions.
+              </strong>
+              , allowing me to build complete end-to-end solutions.
             </p>
 
             <p>
-              I enjoy crafting clean UI, reusable components, and smooth
+              I care deeply about clean UI, reusable components, and smooth
               interactions using{" "}
               <strong>
                 Tailwind CSS, shadcn/ui, and Framer Motion
@@ -74,121 +76,129 @@ const About = () => {
             </p>
 
             <p>
-              I also have hands-on experience with{" "}
-              <strong>WordPress customization</strong>, including theme
-              setup and plugin configuration.
+              I also work with <strong>WordPress customization</strong> for
+              lightweight websites, themes, and plugin setups when needed.
             </p>
 
-            <p>
-              Always learning, improving, and turning ideas into real
-              digital products 🚀
+            <p className="font-medium text-foreground">
+              Always learning, improving, and shipping better software 🚀
             </p>
           </motion.div>
 
-          {/* ================= Skills ================= */}
+          {/* ================= Skills / Capabilities ================= */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
             viewport={{ once: true }}
-            className="grid grid-cols-1 sm:grid-cols-2 gap-5"
+            className="grid grid-cols-1 sm:grid-cols-2 gap-6"
           >
             {[
               {
-                icon: <Code2 className="w-5 h-5" />,
+                icon: <Code2 className="h-5 w-5" />,
                 title: "Programming & Markup",
                 desc: "JavaScript, TypeScript, HTML5, CSS3",
               },
               {
-                icon: <Layers className="w-5 h-5" />,
+                icon: <Layers className="h-5 w-5" />,
                 title: "Frontend Development",
                 desc: "React, Next.js, Tailwind CSS, shadcn/ui",
               },
               {
-                icon: <Server className="w-5 h-5" />,
-                title: "Backend Development",
+                icon: <Server className="h-5 w-5" />,
+                title: "Backend & APIs",
                 desc: "Node.js, Express.js, REST APIs",
               },
               {
-                icon: <Database className="w-5 h-5" />,
+                icon: <Database className="h-5 w-5" />,
                 title: "Databases",
                 desc: "MongoDB, MySQL, Drizzle ORM",
               },
               {
-                icon: <GitBranch className="w-5 h-5" />,
-                title: "Version Control & CI/CD",
+                icon: <GitBranch className="h-5 w-5" />,
+                title: "Version Control",
                 desc: "Git, GitHub, GitHub Actions",
               },
               {
-                icon: <Rocket className="w-5 h-5" />,
+                icon: <Rocket className="h-5 w-5" />,
                 title: "Deployment",
-                desc: "Vercel, Netlify, GitHub Pages",
+                desc: "Vercel, Netlify",
               },
-            ].map((item) => (
-              <div
+            ].map((item, idx) => (
+              <motion.div
                 key={item.title}
-                className="border rounded-2xl p-5 hover:bg-muted transition-all"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: idx * 0.05 }}
+                viewport={{ once: true }}
+                className="group rounded-2xl border p-6 transition hover:shadow-md"
               >
-                <div className="flex items-center gap-2 font-medium mb-2">
+                <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl border bg-muted/40">
                   {item.icon}
-                  {item.title}
                 </div>
-                <p className="text-sm text-muted-foreground">
+                <h4 className="text-sm font-semibold mb-1">
+                  {item.title}
+                </h4>
+                <p className="text-xs text-muted-foreground">
                   {item.desc}
                 </p>
-              </div>
+              </motion.div>
             ))}
           </motion.div>
         </div>
 
-        {/* ================= Expertise / Highlights ================= */}
+        {/* ================= Strengths / Expertise ================= */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
-          className="mt-20"
+          className="mt-28"
         >
-          <h3 className="text-xl md:text-2xl font-semibold mb-8">
+          <h3 className="text-2xl md:text-3xl font-semibold mb-10">
             What I Do Best
           </h3>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {[
               {
-                icon: <Globe />,
-                title: "Next.js Expertise",
-                desc: "SEO-friendly, fast & scalable Next.js applications.",
+                icon: <Globe className="h-5 w-5" />,
+                title: "Next.js Applications",
+                desc: "SEO-friendly, fast and scalable production apps.",
               },
               {
-                icon: <Repeat />,
-                title: "Component Reusability",
-                desc: "Write once, reuse everywhere with clean DRY components.",
+                icon: <Repeat className="h-5 w-5" />,
+                title: "Reusable Components",
+                desc: "Clean, maintainable and DRY component systems.",
               },
               {
-                icon: <Sparkles />,
-                title: "Framer Motion",
-                desc: "Smooth animations & micro-interactions.",
+                icon: <Sparkles className="h-5 w-5" />,
+                title: "Motion & UX",
+                desc: "Smooth animations and micro-interactions.",
               },
               {
-                icon: <Layers />,
+                icon: <Layers className="h-5 w-5" />,
                 title: "Frontend Architecture",
-                desc: "Clean UI systems & reusable design patterns.",
+                desc: "Scalable UI patterns and clean layouts.",
               },
               {
-                icon: <Database />,
-                title: "MySQL Databases",
-                desc: "Relational design, queries & schema management.",
+                icon: <Database className="h-5 w-5" />,
+                title: "Relational Databases",
+                desc: "Schema design, queries and performance tuning.",
               },
               {
-                icon: <Code2 />,
-                title: "WordPress Customization",
-                desc: "Themes, plugins & basic custom setups.",
+                icon: <Code2 className="h-5 w-5" />,
+                title: "WordPress Setup",
+                desc: "Themes, plugins and basic customization.",
               },
-            ].map((item) => (
-              <div
+            ].map((item, idx) => (
+              <motion.div
                 key={item.title}
-                className="border rounded-2xl p-5 hover:bg-muted transition"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: idx * 0.05 }}
+                viewport={{ once: true }}
+                className="rounded-2xl border p-6 hover:bg-muted transition"
               >
                 <div className="flex items-center gap-2 font-medium mb-2">
                   {item.icon}
@@ -197,7 +207,7 @@ const About = () => {
                 <p className="text-sm text-muted-foreground">
                   {item.desc}
                 </p>
-              </div>
+              </motion.div>
             ))}
           </div>
         </motion.div>
