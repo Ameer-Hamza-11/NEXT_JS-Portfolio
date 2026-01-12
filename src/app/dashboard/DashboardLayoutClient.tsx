@@ -13,13 +13,13 @@ const DashboardLayoutClient = ({
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      {/* Top Navbar */}
+  
       <DashboardNavbar onMenuClick={() => setOpen(true)} />
 
-      {/* Sidebar */}
+   
       <DashboardSidebar open={open} onClose={() => setOpen(false)} />
 
-      {/* Main Content */}
+     
       <main className="pt-[8ch] md:pl-64">
         <div className="p-4">{children}</div>
       </main>

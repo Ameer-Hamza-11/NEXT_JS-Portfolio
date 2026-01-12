@@ -2,7 +2,7 @@
 
 import { db } from "@/lib/db"
 import { LoginUserDataType, loginUserSchema, RegisterUserWithConfirmDataType, registerUserWithConfirmSchema } from "../auth.schema"
-import { users } from "@/drizzle/schema"
+import { profile, users } from "@/drizzle/schema"
 import { eq, or } from "drizzle-orm"
 import argon from "argon2"
 import { createSessionAndSetCookies, invalidateSession, validateSessionAndGetUser } from "./use-cases/session"
@@ -27,6 +27,7 @@ export const registerUserAction = async (data: RegisterUserWithConfirmDataType) 
 
         const hashedPassword = await argon.hash(password)
         const [newUser] = await db.insert(users).values({ name, userName, email, phoneNumber, password: hashedPassword })
+        const createProfile = await db.insert(profile).values({userId: newUser.insertId})
         await createSessionAndSetCookies(newUser.insertId)
         return { status: "SUCCESS", message: "Registration Completed Successfully", }
 

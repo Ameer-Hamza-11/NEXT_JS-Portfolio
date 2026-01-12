@@ -26,20 +26,20 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function RootLayout({
+export default async function AdminLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
     const user = await getCurrentUser()
-    if (!user) {
+    if (!user || user.role !== 'admin') {
         notFound()
     }
   return (
-    <html lang="en">
-      <body      >
-        {children}
-      </body>
-    </html>
+   <main className="min-h-screen bg-gray-100 p-4">
+     {children}
+
+   </main>
+ 
   );
 }

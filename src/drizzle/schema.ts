@@ -3,6 +3,7 @@ import {
     index,
     // date,
     int,
+    json,
     mysqlEnum,
     mysqlTable,
     text,
@@ -21,15 +22,26 @@ export const users = mysqlTable("users", {
     role: mysqlEnum("role", ["user", "admin"])
         .default("user")
         .notNull(),
-        phoneNumber: varchar("phone_number", { length: 20 }),
-    avatarUrl: text("avatar_url"),
+    phoneNumber: varchar("phone_number", { length: 20 }),
     deletedAt: timestamp("deleted_at"),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
-},(table)=>({
-    emailIdx: index("email_idx").on(table.email),
-    usernameIdx: index("username_idx").on(table.userName),
-}))
+})
+
+export const profile = mysqlTable("profile", {
+    id: int("id").autoincrement().primaryKey(),
+    userId: int("user_id").notNull().unique().references(() => users.id, { onDelete: "cascade" }),
+    avatarUrl: text("avatar_url"),
+    bannerUrl: text("banner_url"),
+    headline: varchar("headline", { length: 150 }),
+    description: text("description"),
+    location: varchar("location", { length: 100 }),
+    websiteUrl: varchar("website_url", { length: 255 }),
+    githubUrl: varchar("github_url", { length: 255 }),
+    linkedinUrl: varchar("linkedin_url", { length: 255 }),
+    twitterUrl: varchar("twitter_url", { length: 255 }),
+    skills: json("skills"),
+})
 
 
 export const sessions = mysqlTable("sessions", {
@@ -40,9 +52,7 @@ export const sessions = mysqlTable("sessions", {
     expiresAt: timestamp("expires_at").notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
-},(table)=>({
-    userIdIdx: index("session_user_id_idx").on(table.userId),
-}))
+})
 
 
 export const posts = mysqlTable("posts", {
@@ -57,11 +67,8 @@ export const posts = mysqlTable("posts", {
         .notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
- 
-},(table)=>({
-    userIdIdx: index("post_user_id_idx").on(table.userId),
-    slugIdx: index("post_slug_idx").on(table.slug),
-}))
+
+})
 
 
 
