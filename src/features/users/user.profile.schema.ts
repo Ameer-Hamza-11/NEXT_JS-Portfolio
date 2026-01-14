@@ -1,50 +1,55 @@
 import { z } from "zod";
 
-const optionalString = z
-  .string()
-  .trim()
-  .transform(val => (val === "" ? undefined : val))
-  .optional();
+const optionalStringWithLimit = (min?: number, max?: number) => {
+  let schema = z.string().trim();
 
+  if (min) {
+    schema = schema.min(min, `Must be at least ${min} characters`);
+  }
+
+  if (max) {
+    schema = schema.max(max, `Must not exceed ${max} characters`);
+  }
+
+  return schema.transform(val => (val === "" ? undefined : val)).optional();
+};
 export const userProfileSchema = z.object({
-  userId: z.number().int(),
+  name: optionalStringWithLimit(2, 255),
 
-  avatarUrl: optionalString,
-  bannerUrl: optionalString,
+  userName: optionalStringWithLimit(3, 255),
 
-  headline: optionalString.refine(
-    val => !val || val.length <= 150,
-    "Headline must not exceed 150 characters"
-  ),
+  avatarUrl: optionalStringWithLimit(),
 
-  description: optionalString,
+  bannerUrl: optionalStringWithLimit(),
 
-  location: optionalString.refine(
-    val => !val || val.length <= 100,
-    "Location must not exceed 100 characters"
-  ),
+  headline: optionalStringWithLimit(10, 150),
 
-  websiteUrl: optionalString.refine(
+  description: optionalStringWithLimit(20, 1000),
+
+  location: optionalStringWithLimit(2, 100),
+
+  websiteUrl: optionalStringWithLimit().refine(
     val => !val || /^https?:\/\//.test(val),
     "Invalid URL (e.g. https://example.com)"
   ),
 
-  githubUrl: optionalString.refine(
+  githubUrl: optionalStringWithLimit().refine(
     val => !val || /^https?:\/\//.test(val),
     "Invalid GitHub URL"
   ),
 
-  linkedinUrl: optionalString.refine(
+  linkedinUrl: optionalStringWithLimit().refine(
     val => !val || /^https?:\/\//.test(val),
     "Invalid LinkedIn URL"
   ),
 
-  twitterUrl: optionalString.refine(
+  twitterUrl: optionalStringWithLimit().refine(
     val => !val || /^https?:\/\//.test(val),
     "Invalid Twitter URL"
   ),
 
-  skills: z.array(z.string()).optional(),
+  skills: z.array(z.string().min(1, "Skill cannot be empty")).min(1, "At least one skill is required").optional(),
 });
+
 
 export type UserProfileSchemaType = z.infer<typeof userProfileSchema>;
