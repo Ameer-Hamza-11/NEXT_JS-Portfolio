@@ -2,7 +2,8 @@
 /* @import "tw-animate-css"; */
 
 @custom-variant dark (&:is(.dark *));
-
+@import "tailwindcss";
+@import "uploadthing/tw/v4";
 .input-icon {
   position: absolute;
   left: 0.75rem;

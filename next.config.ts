@@ -1,7 +1,16 @@
-import type { NextConfig } from "next";
-
-const nextConfig: NextConfig = {
-  /* config options here */
+const nextConfig = {
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "ufs.sh",
+      },
+      {
+        protocol: "https",
+        hostname: "tvrjqkhyn7.ufs.sh",
+      },
+    ],
+  },
 };
 
-export default nextConfig;
+module.exports = nextConfig;

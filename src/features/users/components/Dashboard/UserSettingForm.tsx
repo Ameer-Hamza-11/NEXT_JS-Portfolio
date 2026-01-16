@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import {
@@ -30,6 +30,10 @@ import {
 import { updateUserProfile } from "../../server/user.profile.action";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import Tiptap from "@/components/tiptap-text-editor";
+import z from "zod";
+import { userProfile } from "../../server/user.profile.queries";
+import { ImageUpload } from "@/components/upload-image";
 
 const skillsOptions = [
   { label: "Web Development", value: "web-dev" },
@@ -51,29 +55,56 @@ const skillsOptions = [
 
 const errorClass = "border-red-500 focus-visible:ring-red-500";
 
-const UserSettingForm = () => {
+type Props = {
+  profile: Awaited<ReturnType<typeof userProfile>> | null;
+};
+
+const UserSettingForm = ({ profile }: Props) => {
   const {
     control,
     handleSubmit,
     register,
     formState: { isDirty, isSubmitting, errors },
+    reset,
   } = useForm<UserProfileSchemaType>({
     resolver: zodResolver(userProfileSchema),
     defaultValues: {
-      avatarUrl: "",
-      bannerUrl: "",
-      description: "",
-      headline: "",
-      location: "",
-      name: "",
-      userName: "",
-      websiteUrl: "",
-      githubUrl: "",
-      linkedinUrl: "",
-      twitterUrl: "",
-      skills: [],
+      avatarUrl: profile?.avatarUrl || "",
+      bannerUrl: profile?.bannerUrl || "",
+      description: profile?.description || "",
+      headline: profile?.headline || "",
+      location: profile?.location || "",
+      name: profile?.name || "",
+      userName: profile?.userName || "",
+      websiteUrl: profile?.websiteUrl || "",
+      githubUrl: profile?.githubUrl || "",
+      linkedinUrl: profile?.linkedinUrl || "",
+      twitterUrl: profile?.twitterUrl || "",
+      skills: Array.isArray(profile?.skills) ? profile?.skills : [],
     },
   });
+  useEffect(() => {
+    const fetchProfile = async () => {
+      if (!profile) return;
+
+      reset({
+        avatarUrl: profile.avatarUrl ?? "",
+        bannerUrl: profile.bannerUrl ?? "",
+        description: profile.description ?? "",
+        headline: profile.headline ?? "",
+        location: profile.location ?? "",
+        name: profile.name ?? "",
+        userName: profile.userName ?? "",
+        websiteUrl: profile.websiteUrl ?? "",
+        githubUrl: profile.githubUrl ?? "",
+        linkedinUrl: profile.linkedinUrl ?? "",
+        twitterUrl: profile.twitterUrl ?? "",
+        skills: Array.isArray(profile.skills) ? profile.skills : [],
+      });
+    };
+
+    fetchProfile();
+  }, [profile, reset]);
 
   const handleFormSubmit = async (data: UserProfileSchemaType) => {
     const res = await updateUserProfile(data);
@@ -86,6 +117,68 @@ const UserSettingForm = () => {
       onSubmit={handleSubmit(handleFormSubmit)}
       className="mx-auto max-w-4xl space-y-8 px-4 py-6"
     >
+ <div className="grid grid-cols-1 md:grid-cols-6 gap-6">
+       
+       <Controller
+         name="avatarUrl"
+         control={control}
+         render={({ field, fieldState }) => {
+           return (
+             <div className="md:col-span-2 space-y-2">
+               <Label htmlFor="avatarUrl">Company Logo *</Label>
+               <ImageUpload
+                 value={field.value}
+                 onChange={field.onChange}
+                 boxText={
+                   "A photo Larger than 400 pixels works best. Max photo size 5 MB"
+                 }
+                 className={cn(
+                   fieldState.error &&
+                     "ring-1 ring-destructive/50 rounded-lg h-64 w-64"
+                 )}
+               />
+               {fieldState.error && (
+                 <p className="text-sm text-destructive">
+                   {fieldState.error.message}
+                 </p>
+               )}
+             </div>
+           );
+         }}
+       />
+ 
+
+     {/* bannerImageUrl */}
+     <Controller
+         name="bannerUrl"
+         control={control}
+         render={({ field, fieldState }) => {
+           return (
+             <div className="md:col-span-4 space-y-2">
+               <Label htmlFor="avatarUrl">Company Banner *</Label>
+               <ImageUpload
+                 value={field.value}
+                 onChange={field.onChange}
+                 boxText={
+                   "A photo Larger than 400 pixels works best. Max photo size 5 MB"
+                 }
+                 className={cn(
+                   fieldState.error &&
+                     "ring-1 ring-destructive/50 rounded-lg h-64 w-64"
+                 )}
+               />
+               {fieldState.error && (
+                 <p className="text-sm text-destructive">
+                   {fieldState.error.message}
+                 </p>
+               )}
+             </div>
+           );
+         }}
+       />
+            </div>
+
+
       {/* BASIC INFO */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         {/* Name */}
@@ -116,9 +209,7 @@ const UserSettingForm = () => {
             />
           </div>
           {errors.userName && (
-            <p className="text-sm text-red-500">
-              {errors.userName.message}
-            </p>
+            <p className="text-sm text-red-500">{errors.userName.message}</p>
           )}
         </div>
       </div>
@@ -138,22 +229,29 @@ const UserSettingForm = () => {
           <p className="text-sm text-red-500">{errors.headline.message}</p>
         )}
       </div>
-
-      {/* DESCRIPTION */}
-      <div className="space-y-1">
+      <div className="space-y-2">
         <Label>Description *</Label>
-        <Textarea
-          placeholder="Tell something about yourself..."
-          className={cn("min-h-[180px]", errors.description && errorClass)}
-          {...register("description")}
-        />
+
+        <div className="overflow-hidden rounded-lg border">
+          <Controller
+            name="description"
+            control={control}
+            render={({ field }) => (
+              <Tiptap value={field.value} onChange={field.onChange} />
+            )}
+          />
+        </div>
+
+        <p className="text-xs text-muted-foreground">
+          Write a short bio about yourself (supports formatting)
+        </p>
+
         {errors.description && (
-          <p className="text-sm text-red-500">
+          <p className="text-sm text-destructive">
             {errors.description.message}
           </p>
         )}
       </div>
-
       {/* LOCATION + WEBSITE */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <div className="space-y-1">
@@ -167,9 +265,7 @@ const UserSettingForm = () => {
             />
           </div>
           {errors.location && (
-            <p className="text-sm text-red-500">
-              {errors.location.message}
-            </p>
+            <p className="text-sm text-red-500">{errors.location.message}</p>
           )}
         </div>
 
@@ -184,9 +280,7 @@ const UserSettingForm = () => {
             />
           </div>
           {errors.websiteUrl && (
-            <p className="text-sm text-red-500">
-              {errors.websiteUrl.message}
-            </p>
+            <p className="text-sm text-red-500">{errors.websiteUrl.message}</p>
           )}
         </div>
       </div>
@@ -243,9 +337,7 @@ const UserSettingForm = () => {
       {/* SUBMIT */}
       <div className="flex items-center gap-4">
         <Button type="submit" disabled={!isDirty || isSubmitting}>
-          {isSubmitting && (
-            <Loader className="mr-2 h-4 w-4 animate-spin" />
-          )}
+          {isSubmitting && <Loader className="mr-2 h-4 w-4 animate-spin" />}
           Save Changes
         </Button>
 
