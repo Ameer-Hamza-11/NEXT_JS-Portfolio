@@ -3,6 +3,23 @@ import { getCurrentUser } from "@/features/auth/server/auth.queries"
 import { db } from "@/lib/db";
 import { eq } from "drizzle-orm";
 
+export interface User {
+  id: number;
+  name: string;
+  userName: string;
+  email: string;
+  role: "user" | "admin";
+  phoneNumber: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+  session: {
+    id: string;
+    expiresAt: Date;
+    userAgent: string;
+    ip: string;
+  } | null;
+}
+
 
 export const userProfile = async () => {
     const user = await getCurrentUser();

@@ -15,6 +15,13 @@
       "when": 1768198254324,
       "tag": "0001_ancient_the_liberteens",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1768666849215,
+      "tag": "0002_chief_madelyne_pryor",
+      "breakpoints": true
     }
   ]
 }

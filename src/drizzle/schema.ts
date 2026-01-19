@@ -60,11 +60,16 @@ export const posts = mysqlTable("posts", {
     userId: int("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
     title: varchar("title", { length: 255 }).notNull(),
     slug: varchar("slug", { length: 255 }).notNull().unique(),
+    excerpt: varchar("excerpt", { length: 300 }),
+    type: mysqlEnum("type", ["blog", "project"])
+        .default("blog")
+        .notNull(),
     content: text("content").notNull(),
     coverImage: text("cover_image"),
     status: mysqlEnum("status", ["draft", "published"])
         .default("draft")
         .notNull(),
+    publishedAt: timestamp("published_at").defaultNow().notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
 

@@ -27,7 +27,7 @@ export const registerUserAction = async (data: RegisterUserWithConfirmDataType) 
 
         const hashedPassword = await argon.hash(password)
         const [newUser] = await db.insert(users).values({ name, userName, email, phoneNumber, password: hashedPassword })
-        const createProfile = await db.insert(profile).values({userId: newUser.insertId})
+        await db.insert(profile).values({userId: newUser.insertId})
         await createSessionAndSetCookies(newUser.insertId)
         return { status: "SUCCESS", message: "Registration Completed Successfully", }
 
@@ -81,8 +81,7 @@ export const logoutUserAction = async () => {
         if (user?.session?.id) {
             await invalidateSession(user.session.id)
         }
-        cookieStore.delete("session")
-
+  
 
 
     } catch (error) {

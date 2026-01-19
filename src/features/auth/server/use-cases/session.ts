@@ -92,6 +92,7 @@ export const validateSessionAndGetUser = async (session: string) => {
 }
 
 export const invalidateSession = async (id: string) => {
-
+    const cookieStore = await cookies()
+    cookieStore.delete("session")
     await db.delete(sessions).where(eq(sessions.id, id))
 }

@@ -7,28 +7,31 @@ import { motion, AnimatePresence } from "framer-motion";
 import { logoutUserAction } from "@/features/auth/server/auth.actions";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import { User } from "../server/user.profile.queries";
 
-interface UserProps {
-  user: {
-    id: number;
-    name: string;
-    userName: string;
-    email: string;
-    role: "user" | "admin";
-    avatarUrl: string | null;
-    phoneNumber: string | null;
-    createdAt: Date;
-    updatedAt: Date;
-    session: {
-      id: string;
-      expiresAt: Date;
-      userAgent: string;
-      ip: string;
-    };
-  } | null;
+// export interface User {
+//   id: number;
+//   name: string;
+//   userName: string;
+//   email: string;
+//   role: "user" | "admin";
+//   avatarUrl: string | null;
+//   phoneNumber: string | null;
+//   createdAt: Date;
+//   updatedAt: Date;
+//   session: {
+//     id: string;
+//     expiresAt: Date;
+//     userAgent: string;
+//     ip: string;
+//   } | null;
+// }
+
+interface NavbarProps {
+  user: User | null;
 }
 
-const Navbar = ({ user }: { user: UserProps["user"] }) => {
+const Navbar = ({ user }:  NavbarProps ) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -39,7 +42,7 @@ const Navbar = ({ user }: { user: UserProps["user"] }) => {
   const loggedInNavItems = [
     { id: 1, name: "Home", path: "/" },
     { id: 2, name: "Dashboard", path: "/dashboard" },
-    { id: 3, name: "Profile", path: "/profile" },
+    { id: 3, name: "Profile", path: "/dashboard/profile" },
   ];
 
   useEffect(() => {

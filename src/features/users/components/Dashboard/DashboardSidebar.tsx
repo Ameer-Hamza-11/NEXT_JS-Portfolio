@@ -7,10 +7,11 @@ import { cn } from "@/lib/utils";
 
 const navItems = [
   { label: "Home", href: "/" },
-  { label: "Profile", href: "/dashboard/profile" },
   { label: "Dashboard", href: "/dashboard" },
-  { label: "Posts", href: "/dashboard/posts" },
-  { label: "Create Post", href: "/dashboard/posts/new" },
+  { label: "Profile", href: "/dashboard/profile" },
+  { label: "Blogs", href: "/dashboard/posts" },
+  { label: "My Posts", href: "/dashboard/posts/my-posts" },
+  { label: "Create Post", href: "/dashboard/posts/create" },
   { label: "Chat", href: "/dashboard/chat" },
   { label: "Settings", href: "/dashboard/settings" },
 ];
