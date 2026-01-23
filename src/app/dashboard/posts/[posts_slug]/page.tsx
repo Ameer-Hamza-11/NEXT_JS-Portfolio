@@ -15,7 +15,7 @@ const page = async ({ params }: Props) => {
 
   const res = await getBlogPostsBySlugAction(posts_slug);
   if (res.status === "ERROR") {
-    return notFound();
+    return <div>{res.message}</div>
   }
 
   return (

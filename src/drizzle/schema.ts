@@ -40,7 +40,7 @@ export const profile = mysqlTable("profile", {
     githubUrl: varchar("github_url", { length: 255 }),
     linkedinUrl: varchar("linkedin_url", { length: 255 }),
     twitterUrl: varchar("twitter_url", { length: 255 }),
-    skills: json("skills"),
+    skills: json("skills").$type<string[] | null>(),
 })
 
 
@@ -76,10 +76,22 @@ export const posts = mysqlTable("posts", {
 })
 
 
+export const contacts = mysqlTable("contacts",{
+    id: int("id").autoincrement().primaryKey(),
+    userId: int("user_id").notNull().references(()=> users.id, {onDelete: "cascade"}),
+    name: varchar("name", { length: 255 }).notNull(),
+    email: varchar("email", { length: 255 }).notNull(),
+    subject: varchar("subject", { length: 255 }).notNull(),
+    message: text("message").notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+} )
+
+
 
 export const userRelations = relations(users, ({ many }) => ({
     sessions: many(sessions),
     posts: many(posts),
+    contacts: many(contacts)
 }))
 
 export const postsRelations = relations(posts, ({ one }) => ({
@@ -97,3 +109,11 @@ export const sessionsRelations = relations(sessions, ({ one }) => ({
         references: [users.id],
     }),
 }));
+
+export const contactsRelation = relations(contacts, ({one})=>({
+    user: one(users,{
+        fields: [contacts.userId],
+        references: [users.id],
+    })
+
+}))

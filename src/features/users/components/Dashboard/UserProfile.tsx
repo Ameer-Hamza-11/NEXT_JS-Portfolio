@@ -19,6 +19,7 @@ import { Button } from "@/components/ui/button";
 
 type Props = {
   profile: Awaited<ReturnType<typeof userProfile>> | null;
+  isOwner? : boolean;
 };
 
 const container = {

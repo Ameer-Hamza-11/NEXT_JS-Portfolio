@@ -1,3 +1,4 @@
+import AdminSideBar from "@/features/admin/components/AdminSideBar";
 import { getCurrentUser } from "@/features/auth/server/auth.queries";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Montserrat } from "next/font/google";
@@ -22,7 +23,11 @@ export const metadata: Metadata = {
     description: "Welcome to My Portfolio",
     url: "https://mern-portfolio-by-hamza.netlify.app",
     siteName: "My Site",
-    images: [{ url: "https://60lubhnpkm.ufs.sh/f/vGItfculpA5wGVJ5Gwr0EkJseWmHVZhFTdC4DbYNxMz85PUB" }],
+    images: [
+      {
+        url: "https://60lubhnpkm.ufs.sh/f/vGItfculpA5wGVJ5Gwr0EkJseWmHVZhFTdC4DbYNxMz85PUB",
+      },
+    ],
   },
 };
 
@@ -31,15 +36,19 @@ export default async function AdminLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-    const user = await getCurrentUser()
-    if (!user || user.role !== 'admin') {
-        notFound()
-    }
+  const user = await getCurrentUser();
+  if (!user || user.role !== "admin") {
+    notFound();
+  }
   return (
-   <main className="min-h-screen bg-gray-100 p-4">
-     {children}
+    <div className="min-h-screen">
+      {/* Sidebar */}
+      <AdminSideBar />
 
-   </main>
- 
+      {/* Main Content */}
+      <main className="pt-14 md:pl-64">
+        <div className="p-4 md:p-6">{children}</div>
+      </main>
+    </div>
   );
 }

@@ -16,7 +16,7 @@ const page = async () => {
 
   return (
     <div>
-      {res.status === "SUCCESS" && <GetAllUserBlogs posts={res.data} isAdmin={true}/>}
+      {res.status === "SUCCESS" && <GetAllUserBlogs posts={res.data} isAdmin={true} />}
     </div>
   );
 };

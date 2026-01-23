@@ -3,30 +3,43 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Calendar, ArrowUpRight } from "lucide-react";
+import { Calendar, ArrowUpRight, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { post } from "../server/blog.posts.action";
+import { deleteBlogPostsAction, post } from "../server/blog.posts.action";
 
 type GetAllUserBlogsProps = {
+  isAdmin?: boolean;
   posts: post[];
 };
 
-const GetAllUserBlogs = ({ posts }: GetAllUserBlogsProps) => {
+const GetAllUserBlogs = ({ posts, isAdmin }: GetAllUserBlogsProps) => {
   if (!posts || posts.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-24 text-center">
         <p className="text-xl font-semibold">No blogs yet</p>
-        <p className="text-sm text-muted-foreground mt-2 max-w-md">
+        <p className="mt-2 text-sm text-muted-foreground max-w-md">
           Thoughts, stories, and ideas will appear here once blogs are published.
         </p>
       </div>
     );
   }
 
+  const handleDelete = async (slug: string) => {
+    const ok = confirm("Are you sure you want to delete this blog?");
+    if (!ok) return;
+
+    await deleteBlogPostsAction(slug);
+  };
+
   return (
     <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
       {posts.map((blog) => (
-        <BlogCard key={blog.id} blog={blog} />
+        <BlogCard
+          key={blog.id}
+          blog={blog}
+          isAdmin={isAdmin}
+          onDelete={handleDelete}
+        />
       ))}
     </section>
   );
@@ -34,9 +47,18 @@ const GetAllUserBlogs = ({ posts }: GetAllUserBlogsProps) => {
 
 export default GetAllUserBlogs;
 
+
 /* ================= BLOG CARD ================= */
 
-const BlogCard = ({ blog }: { blog: post }) => {
+const BlogCard = ({
+  blog,
+  isAdmin,
+  onDelete,
+}: {
+  blog: post;
+  isAdmin?: boolean;
+  onDelete?: (slug: string) => void;
+}) => {
   return (
     <article className="group relative flex flex-col overflow-hidden rounded-2xl border bg-background transition hover:shadow-md">
       {/* IMAGE */}
@@ -58,11 +80,21 @@ const BlogCard = ({ blog }: { blog: post }) => {
         <span className="absolute left-3 top-3 rounded-full border bg-background/90 px-3 py-1 text-xs font-medium backdrop-blur">
           {blog.type}
         </span>
+
+        {/* DELETE (ADMIN ONLY) */}
+        {isAdmin && (
+          <button
+            onClick={() => onDelete?.(blog.slug)}
+            className="absolute right-3 top-3 rounded-md border bg-background/90 p-2 text-muted-foreground opacity-0 transition hover:text-destructive group-hover:opacity-100"
+          >
+            <Trash2 className="h-4 w-4" />
+          </button>
+        )}
       </div>
 
       {/* CONTENT */}
       <div className="flex flex-1 flex-col p-5">
-        <h3 className="line-clamp-2 text-lg font-semibold leading-snug">
+        <h3 className="line-clamp-2 text-lg font-semibold">
           {blog.title}
         </h3>
 
@@ -94,10 +126,10 @@ const BlogCard = ({ blog }: { blog: post }) => {
         {/* CTA */}
         <Link
           href={`/dashboard/posts/${blog.slug}`}
-          className="mt-5 inline-flex items-center gap-1 text-sm font-medium text-foreground hover:underline"
+          className="mt-5 inline-flex items-center gap-1 text-sm font-medium hover:underline"
         >
           View full article
-          <ArrowUpRight className="h-4 w-4 transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+          <ArrowUpRight className="h-4 w-4 transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
         </Link>
       </div>
     </article>

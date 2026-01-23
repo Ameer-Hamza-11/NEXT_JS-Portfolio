@@ -6,21 +6,33 @@ import DashboardNavbar from "@/features/users/components/Dashboard/DashboardNavb
 
 const DashboardLayoutClient = ({
   children,
+  isAdmin,
 }: {
   children: React.ReactNode;
+  isAdmin: boolean;
 }) => {
   const [open, setOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-  
+      {/* Top navbar */}
       <DashboardNavbar onMenuClick={() => setOpen(true)} />
 
-   
-      <DashboardSidebar open={open} onClose={() => setOpen(false)} />
+      {/* Sidebar */}
+      <DashboardSidebar
+        isAdmin={isAdmin}
+        open={open}
+        onClose={() => setOpen(false)}
+      />
 
-     
-      <main className="pt-[8ch] md:pl-64">
+      {/* MAIN CONTENT */}
+      <main
+        className="
+          pt-[8ch]
+          md:pl-72
+          transition-all
+        "
+      >
         <div className="p-4">{children}</div>
       </main>
     </div>

@@ -10,5 +10,5 @@ export default async function DashboardLayout({
   const user = await getCurrentUser();
   if (!user) notFound();
 
-  return <DashboardLayoutClient>{children}</DashboardLayoutClient>;
+  return <DashboardLayoutClient isAdmin={user.role === "admin"}>{children}</DashboardLayoutClient>;
 }

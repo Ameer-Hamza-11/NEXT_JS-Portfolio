@@ -53,7 +53,7 @@ export const getPublishedBlogPostsAction = async (): Promise<{ status: "SUCCESS"
             status: "ERROR",
             message: "You must be logged in to view your published blogs."
         }
-        const publishedPosts = await db.select().from(posts).where(and(eq(posts.status, blogStatus[1]), eq(posts.userId, user.id)))
+        const publishedPosts = await db.select().from(posts).where(eq(posts.status, "published"))
 
 
         return { status: "SUCCESS", data: publishedPosts };
@@ -91,10 +91,9 @@ export const getBlogPostsBySlugAction = async (slug: string): Promise<{ status: 
             return { status: "ERROR", message: "You must be logged in to view your blogs." }
         }
 
-        const [userPosts] = await db.select().from(posts).where(and(
+        const [userPosts] = await db.select().from(posts).where(
             eq(posts.slug, slug),
-            eq(posts.userId, user.id)
-        ))
+        )
         if (!userPosts) {
             return { status: "ERROR", message: "Blog not found." }
         }
@@ -120,12 +119,12 @@ export const updateBlogPostsAction = async (slug: string, data: blogPostsSchemaT
         }
         const { title, content, excerpt, status, type, coverImage } = validatedData;
 
-   
+
         const newSlug =
-        slug === slugify(title)
-          ? slug
-          : `${slugify(title)}-${crypto.randomUUID().slice(0, 6)}`;
-          
+            slug === slugify(title)
+                ? slug
+                : `${slugify(title)}-${crypto.randomUUID().slice(0, 6)}`;
+
         await db.update(posts).set({
             userId: user.id,
             slug: newSlug,
@@ -153,7 +152,7 @@ export const updateBlogPostsAction = async (slug: string, data: blogPostsSchemaT
 export type DeleteBlogHandler = (slug: string) => Promise<{
     status: "SUCCESS" | "ERROR";
     message: string;
-  }>;
+}>;
 export const deleteBlogPostsAction = async (slug: string): Promise<{ status: "SUCCESS" | "ERROR"; message: string }> => {
     try {
         const user = await getCurrentUser()
@@ -167,9 +166,9 @@ export const deleteBlogPostsAction = async (slug: string): Promise<{ status: "SU
         ))
 
         return { status: "SUCCESS", message: "Blog Deleted SuccessFully!" }
-        
+
     } catch (error) {
         return { status: "ERROR", message: "Something went wrong, Please Try Again!" }
-        
+
     }
 }

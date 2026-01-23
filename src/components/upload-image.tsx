@@ -23,6 +23,7 @@ export const ImageUpload = ({value,onChange,boxText,className, ...props}: ImageU
   const inputRef = useRef<HTMLInputElement | null>(null)
 
   const {startUpload} = useUploadThing("imageUploader",{
+    
     onClientUploadComplete: (res)=>{
       if (res && res[0]) {
         const url = res[0].ufsUrl
