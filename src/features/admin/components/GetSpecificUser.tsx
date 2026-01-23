@@ -2,7 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
-import Link from "next/link";
+// import Link from "next/link";
 import { User, Globe, Github, Linkedin, Twitter } from "lucide-react";
 import { GetUserType } from "@/features/users/server/user.profile.action";
 
@@ -66,10 +66,6 @@ const GetSpecificUser = ({ data }: { data: GetUserType }) => {
           {user.twitterUrl && <SocialIcon href={user.twitterUrl}><Twitter /></SocialIcon>}
         </div>
 
-        {/* CTA */}
-        <Link href={`/users/${user.userName}`} className="mt-4 inline-block text-sm font-medium text-accent hover:underline">
-          View profile →
-        </Link>
       </div>
     </div>
   );
