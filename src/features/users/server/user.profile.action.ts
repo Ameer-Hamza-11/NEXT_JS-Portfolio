@@ -33,7 +33,20 @@ export const updateUserProfile = async (data: UserProfileSchemaType) => {
       linkedinUrl,
       twitterUrl,
       skills,
-    } = validatedData
+    } = validatedData;
+    
+    if (!userName) {
+      return { status: "ERROR", message: "Username is required" };
+    }
+    
+    const isUserNameMatch = await db
+      .select()
+      .from(users)
+      .where(eq(users.userName, userName));
+    
+    if (isUserNameMatch) {
+      return  { status: "ERROR", message: "username already taken!, try something different" }
+    }
 
     await db.transaction(async (tx) => {
       await tx.update(users).set({

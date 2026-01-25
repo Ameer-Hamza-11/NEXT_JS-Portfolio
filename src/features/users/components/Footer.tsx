@@ -22,7 +22,7 @@ const Footer = () => {
           {/* ===== Socials ===== */}
           <div className="flex items-center gap-4">
             <a
-              href="https://github.com/Ameer-Hamza-11"
+              href="https://github.com/Ameer-Hamza-11/"
               target="_blank"
               className="rounded-full border p-2 transition hover:bg-muted"
               aria-label="GitHub"
@@ -31,7 +31,7 @@ const Footer = () => {
             </a>
 
             <a
-              href="https://www.linkedin.com/"
+              href="https://www.linkedin.com/in/ameer-hamza-jameel-556717332?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app"
               target="_blank"
               className="rounded-full border p-2 transition hover:bg-muted"
               aria-label="LinkedIn"
@@ -40,7 +40,7 @@ const Footer = () => {
             </a>
 
             <a
-              href="mailto:your@email.com"
+              href="ameerhamza.saati@gmail.com"
               className="rounded-full border p-2 transition hover:bg-muted"
               aria-label="Email"
             >

@@ -1,9 +1,9 @@
 "use server"
 
-import { contacts, posts, users } from "@/drizzle/schema";
+import { contacts, posts, profile, users } from "@/drizzle/schema";
 import { getCurrentUser } from "@/features/auth/server/auth.queries";
 import { db } from "@/lib/db";
-import { and, count as drizzleCount, eq } from "drizzle-orm";
+import { and, desc, count as drizzleCount, eq, InferSelectModel } from "drizzle-orm";
 
 
 
@@ -56,7 +56,7 @@ export const deleteUserByUserName = async (userName: string) => {
         if (user.role !== "admin") {
             return { status: "ERROR", message: "Unauthorized Access." };
         }
-        await db.delete(users).where(and(eq(users.id, user.id), eq(users.userName, userName)))
+        await db.delete(users).where(eq(users.userName, userName))
 
 
         return { status: "SUCCESS", message: "User Deleted SuccessFully" };
@@ -67,4 +67,54 @@ export const deleteUserByUserName = async (userName: string) => {
             message: "Something went wrong, please try again.",
         };
     }
+}
+
+
+
+export const getRecentUsersAction = async () => {
+  try {
+    const user = await getCurrentUser()
+    if (!user || user.role !== "admin") {
+    return { status: "ERROR", message: "Unauthorized!" };
+        
+    }
+    const recentUsers = await db
+      .select({
+        id: users.id,
+        name: users.name,
+        userName: users.userName,
+        createdAt: users.createdAt,
+      })
+      .from(users)
+      .orderBy(desc(users.createdAt))
+      .limit(5);
+
+    return { status: "SUCCESS", data: recentUsers };
+  } catch (error) {
+    return { status: "ERROR", message: "Something went wrong, please try again.", };
+  }
+};
+
+// type  BlogsType = InferSelectModel<typeof posts>
+// export type getRecentBlogType = 
+// | {status: "SUCCESS" , data: BlogsType[] }
+// | {status: "ERROR" , message: string }
+
+export const getRecentBlogsAction=  async()=>{
+    try {
+        const user = await getCurrentUser()
+        if (!user || user.role !== "admin") {
+        return { status: "ERROR", message: "UnAuthorized!" };
+            
+        }
+        const recentBlogs = await db
+          .select()
+          .from(posts)
+          .orderBy(desc(posts.createdAt))
+          .limit(5);
+    
+        return { status: "SUCCESS", data: recentBlogs };
+      } catch (error) {
+        return { status: "ERROR", message: "Something went wrong, please try again.", };
+      }
 }
