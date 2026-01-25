@@ -13,7 +13,6 @@ const GetFullBlog = ({ data }: { data: post }) => {
 
   return (
     <article className="mx-auto max-w-3xl px-4 sm:px-6 py-10">
-      
       {/* ================= GO BACK ================= */}
       <div className="mb-6">
         <Button
@@ -71,6 +70,7 @@ const GetFullBlog = ({ data }: { data: post }) => {
             alt={data.title}
             fill
             priority
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 80vw, 60vw"
             className="object-cover"
           />
         </div>
