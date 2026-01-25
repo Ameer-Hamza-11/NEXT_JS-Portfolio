@@ -9,89 +9,106 @@ import { toast } from "sonner"
 import { Button } from "./ui/button"
 import Image from "next/image"
 
-
-type ImageUploadType = Omit<ComponentProps<"div">, "OnChange"> & {
-  value?: string,
-  onChange: (url: string)=> void,
+type ImageUploadType = Omit<ComponentProps<"div">, "onChange"> & {
+  value?: string
+  onChange: (url: string) => void
   boxText?: string
 }
 
-
-export const ImageUpload = ({value,onChange,boxText,className, ...props}: ImageUploadType)=>{
+export const ImageUpload = ({
+  value,
+  onChange,
+  boxText,
+  className,
+  ...props
+}: ImageUploadType) => {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const [isUploading, setIsUploading] = useState(false)
+  const [showButtons, setShowButtons] = useState(false) // For mobile tap
   const inputRef = useRef<HTMLInputElement | null>(null)
 
-  const {startUpload} = useUploadThing("imageUploader",{
-    
-    onClientUploadComplete: (res)=>{
+  const { startUpload } = useUploadThing("imageUploader", {
+    onClientUploadComplete: (res) => {
       if (res && res[0]) {
         const url = res[0].ufsUrl
         setPreviewUrl(url)
-        setIsUploading(false)
         onChange(url)
         toast.success("Upload successful!")
       }
       setIsUploading(false)
-    }, onUploadError: (error)=>{
+    },
+    onUploadError: (error) => {
       toast.error(`Upload failed: ${error.message}`)
       setPreviewUrl(null)
       setIsUploading(false)
-    }
+    },
   })
 
-  const handleFileSelect = async (files:File[])=>{
-    const file= files[0]
-    if (!file) return;
-    if(!file.type.startsWith("image/")){
-      toast.error("Please select a valid image file.");
-      return;
+  const handleFileSelect = async (files: File[]) => {
+    const file = files[0]
+    if (!file) return
+
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please select a valid image file.")
+      return
     }
 
-    if(file.size > 5 * 1024 * 1024){
-      toast.error("File size exceeds 5 MB limit.");
-      return;
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("File size exceeds 5 MB limit.")
+      return
     }
 
     const reader = new FileReader()
-    reader.onloadend = ()=> setPreviewUrl(reader.result as string)
+    reader.onloadend = () => setPreviewUrl(reader.result as string)
     reader.readAsDataURL(file)
-
 
     setIsUploading(true)
     await startUpload([file])
   }
 
-  const {getInputProps,getRootProps,isDragActive} = useDropzone({
+  const { getInputProps, getRootProps, isDragActive } = useDropzone({
     onDrop: handleFileSelect,
     maxFiles: 1,
     disabled: isUploading,
   })
 
-  const handleRemove = (e: React.MouseEvent)=>{
+  const handleRemove = (e: React.MouseEvent) => {
     e.stopPropagation()
     setIsUploading(false)
     setPreviewUrl(null)
     onChange("")
+    setShowButtons(false)
+    toast.success("Image removed")
   }
-  if (value || previewUrl)
+
+  // Toggle buttons on mobile tap
+  const handleImageClick = () => {
+    if (window.innerWidth < 640) {
+      setShowButtons(!showButtons)
+    }
+  }
+
+  // Image preview with overlay
+  if (value || previewUrl) {
     return (
       <div
-      className={cn(
-        "relative group overflow-hidden rounded-lg border-2 border-border",
-        "w-full h-48",
-        className
-      )}
-      {...props}
-    >
-     <Image
-  src={previewUrl || value || ""}
-  alt="Uploaded image"
-  fill
-  unoptimized
-  className="object-cover"
-/>
+        className={cn(
+          "relative group overflow-hidden rounded-lg border-2 border-border w-full h-48",
+          className
+        )}
+        {...props}
+      >
+        <div onClick={handleImageClick} className="w-full h-full">
+          <Image
+            src={previewUrl || value || ""}
+            alt="Uploaded image"
+            fill
+            unoptimized
+            className="object-cover"
+          />
+        </div>
 
+        {/* Uploading overlay */}
         {isUploading && (
           <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
             <div className="flex flex-col items-center gap-2">
@@ -101,25 +118,33 @@ export const ImageUpload = ({value,onChange,boxText,className, ...props}: ImageU
           </div>
         )}
 
+        {/* Buttons overlay */}
         {!isUploading && (
           <div
             {...getRootProps()}
-            className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 "
+            className={cn(
+              "absolute inset-0 flex items-center justify-center gap-2 bg-black/40 transition-opacity",
+              // Desktop hover or mobile tap
+              "sm:opacity-0 sm:group-hover:opacity-100",
+              showButtons && "opacity-100"
+            )}
           >
-            <input {...getInputProps()}   ref={inputRef} />
+            <input {...getInputProps()} ref={inputRef} />
+
             <Button
-            className="cursor-pointer"
               type="button"
               variant="secondary"
               size="sm"
+              className="cursor-pointer"
               onClick={(e) => {
                 e.stopPropagation()
-                inputRef.current?.click() 
+                inputRef.current?.click()
               }}
             >
-              <Upload className="w-4 h-4 mr-2"  />
+              <Upload className="w-4 h-4 mr-2" />
               Change
             </Button>
+
             <Button
               type="button"
               variant="destructive"
@@ -132,16 +157,15 @@ export const ImageUpload = ({value,onChange,boxText,className, ...props}: ImageU
           </div>
         )}
       </div>
-    );
+    )
+  }
 
-
-   return (
+  // Upload box if no image
+  return (
     <div
       {...getRootProps()}
       className={cn(
-        "relative h-full min-h-40 border-2 border-dashed rounded-lg",
-        "flex flex-col items-center justify-center text-center",
-        "cursor-pointer transition-colors",
+        "relative h-48 border-2 border-dashed rounded-lg flex flex-col items-center justify-center text-center cursor-pointer transition-colors",
         isDragActive
           ? "border-primary bg-primary/5"
           : "border-muted-foreground/25 hover:border-primary/50",
@@ -165,5 +189,5 @@ export const ImageUpload = ({value,onChange,boxText,className, ...props}: ImageU
         )}
       </div>
     </div>
-  );
+  )
 }

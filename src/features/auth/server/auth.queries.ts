@@ -2,11 +2,17 @@ import { cookies } from "next/headers"
 import { validateSessionAndGetUser } from "./use-cases/session";
 import { cache } from "react";
 
+
 export const getCurrentUser = cache(async () => {
-    const cookie = await cookies()
-    const session = cookie.get("session")?.value;
+  try {
+    const cookieStore = await cookies(); 
+    const session = cookieStore.get("session")?.value;
 
     if (!session) return null;
-    const user = await validateSessionAndGetUser(session)
-    return user
-})
+
+    return await validateSessionAndGetUser(session);
+  } catch (error) {
+    console.error("DB ERROR:", error);
+    return null; 
+  }
+});

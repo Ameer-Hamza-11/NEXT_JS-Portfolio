@@ -3,7 +3,7 @@
 import { contacts, posts, users } from "@/drizzle/schema";
 import { getCurrentUser } from "@/features/auth/server/auth.queries";
 import { db } from "@/lib/db";
-import { count as drizzleCount, eq } from "drizzle-orm";
+import { and, count as drizzleCount, eq } from "drizzle-orm";
 
 
 
@@ -36,7 +36,32 @@ export const getDataLengthAction = async (): Promise<DataLengthType> => {
 
         return { status: "SUCCESS", data: { userCount, postsCount, messagesCount } };
 
-    } catch (error) {
+    } catch {
+        return {
+            status: "ERROR",
+            message: "Something went wrong, please try again.",
+        };
+    }
+}
+
+
+
+export const deleteUserByUserName = async (userName: string) => {
+    try {
+        const user = await getCurrentUser();
+
+        if (!user) {
+            return { status: "ERROR", message: "User not found." };
+        }
+        if (user.role !== "admin") {
+            return { status: "ERROR", message: "Unauthorized Access." };
+        }
+        await db.delete(users).where(and(eq(users.id, user.id), eq(users.userName, userName)))
+
+
+        return { status: "SUCCESS", message: "User Deleted SuccessFully" };
+
+    } catch {
         return {
             status: "ERROR",
             message: "Something went wrong, please try again.",

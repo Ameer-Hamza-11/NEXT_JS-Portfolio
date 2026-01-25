@@ -57,6 +57,7 @@ export const createSessionAndSetCookies = async (userId: number, tx: DbClient = 
 
 //? to check if the user is login or not & is User session is expired or not
 export const validateSessionAndGetUser = async (session: string) => {
+try {
     const hashedToken = crypto.createHash("sha-256").update(session).digest("hex")
     const [user] = await db.select({
         session: {
@@ -87,7 +88,11 @@ export const validateSessionAndGetUser = async (session: string) => {
             expiresAt: new Date(Date.now() + SESSION_LIFETIME * 1000)
         }).where(eq(sessions.id, user.session.id))
     }
-    return user
+    return user  || null;
+} catch (error) {
+    console.error("DB down or query failed:", error);
+    return null;
+}
 
 }
 

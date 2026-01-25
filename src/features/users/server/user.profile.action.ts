@@ -136,30 +136,34 @@ export const getUserByUserNameAction = async (userName: string): Promise<GetUser
       return { status: "ERROR", message: "Unauthorized Access." };
     }
     const [userData] = await db
-      .select({
-        name: users.name,
-        userName: users.userName,
-        avatarUrl: profile.avatarUrl,
-        bannerUrl: profile.bannerUrl,
-        headline: profile.headline,
-        description: profile.description,
-        location: profile.location,
-        websiteUrl: profile.websiteUrl,
-        githubUrl: profile.githubUrl,
-        linkedinUrl: profile.linkedinUrl,
-        twitterUrl: profile.twitterUrl,
-        skills: profile.skills,
-      })
-      .from(profile)
-      .innerJoin(users, and(eq(users.id, profile.userId), eq(users.role, "user")))
-      .where(eq(users.userName, userName)) as UserItem[];
+    .select({
+      name: users.name,
+      userName: users.userName,
+      avatarUrl: profile.avatarUrl,
+      bannerUrl: profile.bannerUrl,
+      headline: profile.headline,
+      description: profile.description,
+      location: profile.location,
+      websiteUrl: profile.websiteUrl,
+      githubUrl: profile.githubUrl,
+      linkedinUrl: profile.linkedinUrl,
+      twitterUrl: profile.twitterUrl,
+      skills: profile.skills,
+    })
+    .from(users)
+    .innerJoin(profile,and(eq(users.id, profile.userId), eq(users.role, "user")))
+    .where(eq(users.userName, userName)) ;
 
+    
+  
 
 
 
 
     return { status: "SUCCESS", data: userData || null };
-  } catch {
+  } catch(err){
+    console.log(err);
+    
     return {
       status: "ERROR",
       message: "Something went wrong, please try again.",

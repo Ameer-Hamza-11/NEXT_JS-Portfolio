@@ -2,13 +2,31 @@
 
 import React from "react";
 import Image from "next/image";
-import { Calendar } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Calendar, ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import { post } from "../server/blog.posts.action";
 
 const GetFullBlog = ({ data }: { data: post }) => {
+  const router = useRouter();
+
   return (
     <article className="mx-auto max-w-3xl px-4 sm:px-6 py-10">
+      
+      {/* ================= GO BACK ================= */}
+      <div className="mb-6">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => router.back()}
+          className="flex items-center gap-1 text-muted-foreground hover:text-foreground"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back
+        </Button>
+      </div>
+
       {/* ================= HEADER ================= */}
       <header className="mb-8 space-y-4">
         {/* TYPE */}
@@ -29,7 +47,7 @@ const GetFullBlog = ({ data }: { data: post }) => {
         )}
 
         {/* META */}
-        <div className="flex items-center gap-3 text-sm text-muted-foreground">
+        <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
           <Calendar className="h-4 w-4" />
           <time dateTime={data.createdAt.toString()}>
             {new Date(data.createdAt).toLocaleDateString("en-GB", {
@@ -67,9 +85,7 @@ const GetFullBlog = ({ data }: { data: post }) => {
           "prose-a:text-foreground",
           "dark:prose-invert"
         )}
-        dangerouslySetInnerHTML={{
-          __html: data.content,
-        }}
+        dangerouslySetInnerHTML={{ __html: data.content }}
       />
 
       {/* ================= FOOTER ================= */}
