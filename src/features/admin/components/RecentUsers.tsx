@@ -40,4 +40,4 @@ const RecentUsers = ({ data }: { data: RecentUser[] }) => {
   );
 };
 
-export default RecentUsers;
+export default RecentUsers
